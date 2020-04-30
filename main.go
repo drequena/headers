@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -11,12 +12,15 @@ import (
 var defaultHTPStatus int = 200
 
 func main() {
+
 	port, err := os.LookupEnv("PORT")
 	if !err {
 		port = ":9090"
 	} else {
 		port = ":" + port
 	}
+
+	log.Printf("Starting Headers on port: %s\n", port)
 
 	http.HandleFunc("/", printHeaders)
 	http.HandleFunc("/set/", setStatusCode)
@@ -31,13 +35,9 @@ func printHeaders(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Path: %s\nMethod: %s\n", r.URL.Path, r.Method)
 
-	//buf := new(bytes.Buffer)
-	// buf.ReadFrom(r.Body)
-	// fmt.Printf("Body: %s", buf.String())
-
 	hostname, _ := os.Hostname()
 	w.WriteHeader(defaultHTPStatus)
-	fmt.Fprintf(w, "{\"STATUS:\" \"OK\", \"HOST:\" \"%s\"}\n", hostname)
+	fmt.Fprintf(w, "{\"STATUS:\" \"%d\", \"HOST:\" \"%s\"}\n", defaultHTPStatus, hostname)
 }
 
 func setStatusCode(w http.ResponseWriter, r *http.Request) {
@@ -47,11 +47,11 @@ func setStatusCode(w http.ResponseWriter, r *http.Request) {
 		intCode, err := strconv.Atoi(strCode)
 
 		if err != nil {
-			fmt.Printf("Error converting %s to int", strCode)
+			log.Printf("Error converting %s to int", strCode)
 			w.WriteHeader(500)
 			fmt.Fprintf(w, "Error\n")
 		} else {
-			fmt.Printf("Changing / status code to: %d\n", intCode)
+			log.Printf("Changing / status code to: %d\n", intCode)
 			defaultHTPStatus = intCode
 			fmt.Fprintf(w, "{\"STATUS:\" \"OK\"}\n")
 		}
