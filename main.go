@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"headers/codes"
 	"log"
 	"net/http"
 	"os"
@@ -48,8 +49,11 @@ func setStatusCode(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			log.Printf("Error converting %s to int", strCode)
-			w.WriteHeader(500)
-			fmt.Fprintf(w, "Error\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "{\"STATUS:\" \"Error\"}\n")
+		} else if !codes.CheckHTTPCODE(intCode) {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "{\"STATUS:\" \"Invalid HTTP Code\"}\n")
 		} else {
 			log.Printf("Changing / status code to: %d\n", intCode)
 			defaultHTPStatus = intCode
