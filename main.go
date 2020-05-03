@@ -11,6 +11,16 @@ import (
 )
 
 var defaultHTPStatus int = 200
+var hostname string
+
+func init() {
+	var err error
+
+	hostname, err = os.Hostname()
+	if err != nil {
+		panic(err)
+	}
+}
 
 func main() {
 
@@ -36,7 +46,6 @@ func printHeaders(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Path: %s\nMethod: %s\n", r.URL.Path, r.Method)
 
-	hostname, _ := os.Hostname()
 	w.WriteHeader(defaultHTPStatus)
 	fmt.Fprintf(w, "{\"STATUS:\" \"%d\", \"HOST:\" \"%s\"}\n", defaultHTPStatus, hostname)
 }
