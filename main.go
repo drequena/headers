@@ -23,7 +23,7 @@ func init() {
 		panic(err)
 	}
 
-	port, ret := os.LookupEnv("PORT")
+	port, ret = os.LookupEnv("PORT")
 	if !ret {
 		port = ":9090"
 	} else {
