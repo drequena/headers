@@ -17,4 +17,8 @@ func TestCheckHTTPCODE(t *testing.T) {
 		}
 	}
 
+	got = CheckHTTPCODE(1)
+	if got == want {
+		t.Errorf("got %v want %v", got, want)
+	}
 }
