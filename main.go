@@ -12,24 +12,27 @@ import (
 
 var defaultHTPStatus int = 200
 var hostname string
+var port string
 
 func init() {
 	var err error
+	var ret bool
 
 	hostname, err = os.Hostname()
 	if err != nil {
 		panic(err)
 	}
-}
 
-func main() {
-
-	port, err := os.LookupEnv("PORT")
-	if !err {
+	port, ret := os.LookupEnv("PORT")
+	if !ret {
 		port = ":9090"
 	} else {
 		port = ":" + port
 	}
+
+}
+
+func main() {
 
 	log.Printf("Starting Headers on port: %s\n", port)
 
