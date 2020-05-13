@@ -9,21 +9,60 @@ import (
 	"testing"
 )
 
-func TestPrintHeaders(t *testing.T) {
+// func TestPrintHeaders(t *testing.T) {
 
-	httpWantedCode := 200
-	httpPatternWantedBody := "{\"STATUS:\" \"200\", \"HOST:\" \".*\"}\n"
+// 	httpWantedCode := 200
+// 	httpPatternWantedBody := "{\"STATUS:\" \"200\", \"HOST:\" \".*\"}\n"
 
-	status, body := makeTestRequest("GET", "http://127.0.0.1/set/500", nil, printHeaders)
+// 	status, body := makeTestRequest("GET", "http://127.0.0.1/set/500", nil, printHeaders)
 
-	if status != httpWantedCode {
-		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
+// 	if status != httpWantedCode {
+// 		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
+// 	}
+
+// 	regexRet, err := regexp.MatchString("{\"STATUS:\" \"200\", \"HOST:\" \".*\"}", body)
+// 	if !regexRet || err != nil {
+// 		t.Errorf("Expected StatusCode pattern %s, got %s", httpPatternWantedBody, body)
+// 	}
+// }
+
+func TestTableTests(t *testing.T) {
+
+	var testsSets = []struct {
+		testName              string
+		httpWantedCode        int
+		httpWantedBody        string
+		httpPatternWantedBody string
+		makeRequestMethod     string
+		makeRequestURL        string
+		makeRequestBody       io.Reader
+		makeRequestHandler    func(http.ResponseWriter, *http.Request)
+	}{
+		{"TestPrintHeaders", 200, "", "{\"STATUS:\" \"200\", \"HOST:\" \".*\"}\n", "GET", "http://127.0.0.1/set/500", nil, printHeaders},
 	}
 
-	regexRet, err := regexp.MatchString("{\"STATUS:\" \"200\", \"HOST:\" \".*\"}", body)
-	if !regexRet || err != nil {
-		t.Errorf("Expected StatusCode pattern %s, got %s", httpPatternWantedBody, body)
+	for _, tt := range testsSets {
+		status, body := makeTestRequest(tt.makeRequestMethod, tt.makeRequestURL, tt.makeRequestBody, tt.makeRequestHandler)
+
+		if status != tt.httpWantedCode {
+			t.Errorf("Expected StatusCode %d, got %d on Test: %s", tt.httpWantedCode, status, tt.testName)
+		}
+
+		if tt.httpPatternWantedBody != "" {
+			regexRet, err := regexp.MatchString(tt.httpPatternWantedBody, body)
+			if !regexRet || err != nil {
+				t.Errorf("Expected StatusCode pattern %s, got %s on Test: %s", tt.httpPatternWantedBody, body, tt.testName)
+			}
+		}
+
+		if tt.httpWantedBody != "" {
+			if tt.httpWantedBody != body {
+				t.Errorf("Expected StatusCode pattern %s, got %s on Test: %s", tt.httpWantedBody, body, tt.testName)
+			}
+		}
+
 	}
+
 }
 
 func TestSetStatusCode(t *testing.T) {
