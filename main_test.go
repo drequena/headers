@@ -9,23 +9,6 @@ import (
 	"testing"
 )
 
-// func TestPrintHeaders(t *testing.T) {
-
-// 	httpWantedCode := 200
-// 	httpPatternWantedBody := "{\"STATUS:\" \"200\", \"HOST:\" \".*\"}\n"
-
-// 	status, body := makeTestRequest("GET", "http://127.0.0.1/set/500", nil, printHeaders)
-
-// 	if status != httpWantedCode {
-// 		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
-// 	}
-
-// 	regexRet, err := regexp.MatchString("{\"STATUS:\" \"200\", \"HOST:\" \".*\"}", body)
-// 	if !regexRet || err != nil {
-// 		t.Errorf("Expected StatusCode pattern %s, got %s", httpPatternWantedBody, body)
-// 	}
-// }
-
 func TestTableTests(t *testing.T) {
 
 	var testsSets = []struct {
@@ -38,7 +21,11 @@ func TestTableTests(t *testing.T) {
 		makeRequestBody       io.Reader
 		makeRequestHandler    func(http.ResponseWriter, *http.Request)
 	}{
-		{"TestPrintHeaders", 200, "", "{\"STATUS:\" \"200\", \"HOST:\" \".*\"}\n", "GET", "http://127.0.0.1/set/500", nil, printHeaders},
+		{"TestPrintHeaders", 200, "", "{\"STATUS:\" \"200\", \"HOST:\" \".*\"}\n", "GET", "http://127.0.0.1/", nil, printHeaders},
+		{"TestSetStatusCode", 200, "{\"STATUS:\" \"OK\"}\n", "", "GET", "http://127.0.0.1/set/500", nil, setStatusCode},
+		{"TestSetStatusCodeInvalidHTTPCode", 500, "{\"STATUS:\" \"Invalid HTTP Code\"}\n", "", "GET", "http://127.0.0.1/set/700", nil, setStatusCode},
+		{"TestSetStatusCodeConvertError", 500, "{\"STATUS:\" \"Error\"}\n", "", "GET", "http://127.0.0.1/set/abcde", nil, setStatusCode},
+		{"TestSetStatusCodeWrongMethod", 405, "", "", "POST", "http://127.0.0.1/set/500", nil, setStatusCode},
 	}
 
 	for _, tt := range testsSets {
@@ -53,78 +40,13 @@ func TestTableTests(t *testing.T) {
 			if !regexRet || err != nil {
 				t.Errorf("Expected StatusCode pattern %s, got %s on Test: %s", tt.httpPatternWantedBody, body, tt.testName)
 			}
-		}
-
-		if tt.httpWantedBody != "" {
+		} else {
 			if tt.httpWantedBody != body {
 				t.Errorf("Expected StatusCode pattern %s, got %s on Test: %s", tt.httpWantedBody, body, tt.testName)
 			}
 		}
-
 	}
 
-}
-
-func TestSetStatusCode(t *testing.T) {
-
-	httpWantedCode := 200
-	httpWantedBody := "{\"STATUS:\" \"OK\"}\n"
-
-	status, body := makeTestRequest("GET", "http://127.0.0.1/set/500", nil, setStatusCode)
-
-	if status != httpWantedCode {
-		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
-	}
-
-	if httpWantedBody != body {
-		t.Errorf("Expected StatusCode pattern %s, got %s", httpWantedBody, body)
-	}
-
-}
-
-func TestSetStatusCodeInvalidHTTPCode(t *testing.T) {
-	httpWantedCode := 500
-	httpWantedBody := "{\"STATUS:\" \"Invalid HTTP Code\"}\n"
-
-	status, body := makeTestRequest("GET", "http://127.0.0.1/set/700", nil, setStatusCode)
-
-	if status != httpWantedCode {
-		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
-	}
-
-	if httpWantedBody != body {
-		t.Errorf("Expected StatusCode pattern %s, got %s", httpWantedBody, body)
-	}
-}
-
-func TestSetStatusCodeConvertError(t *testing.T) {
-	httpWantedCode := 500
-	httpWantedBody := "{\"STATUS:\" \"Error\"}\n"
-
-	status, body := makeTestRequest("GET", "http://127.0.0.1/set/abcde", nil, setStatusCode)
-
-	if status != httpWantedCode {
-		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
-	}
-
-	if httpWantedBody != body {
-		t.Errorf("Expected StatusCode pattern %s, got %s", httpWantedBody, body)
-	}
-}
-
-func TestSetStatusCodeWrongMethod(t *testing.T) {
-	httpWantedCode := http.StatusMethodNotAllowed
-	httpWantedBody := ""
-
-	status, body := makeTestRequest("POST", "http://127.0.0.1/set/abcde", nil, setStatusCode)
-
-	if status != httpWantedCode {
-		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
-	}
-
-	if httpWantedBody != body {
-		t.Errorf("Expected StatusCode pattern %s, got %s", httpWantedBody, body)
-	}
 }
 
 //TestCheckHTTPCODE test if HTTPCODE is correct
@@ -154,6 +76,85 @@ func makeTestRequest(method string, url string, body io.Reader, handler func(htt
 
 	return response.Result().StatusCode, string(retBody)
 }
+
+// func TestSetStatusCodeWrongMethod(t *testing.T) {
+// 	httpWantedCode := http.StatusMethodNotAllowed
+// 	httpWantedBody := ""
+
+// 	status, body := makeTestRequest("POST", "http://127.0.0.1/set/500", nil, setStatusCode)
+
+// 	if status != httpWantedCode {
+// 		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
+// 	}
+
+// 	if httpWantedBody != body {
+// 		t.Errorf("Expected StatusCode pattern %s, got %s", httpWantedBody, body)
+// 	}
+// }
+
+// func TestSetStatusCodeConvertError(t *testing.T) {
+// 	httpWantedCode := 500
+// 	httpWantedBody := "{\"STATUS:\" \"Error\"}\n"
+
+// 	status, body := makeTestRequest("GET", "http://127.0.0.1/set/abcde", nil, setStatusCode)
+
+// 	if status != httpWantedCode {
+// 		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
+// 	}
+
+// 	if httpWantedBody != body {
+// 		t.Errorf("Expected StatusCode pattern %s, got %s", httpWantedBody, body)
+// 	}
+// }
+
+// func TestSetStatusCodeInvalidHTTPCode(t *testing.T) {
+// 	httpWantedCode := 500
+// 	httpWantedBody := "{\"STATUS:\" \"Invalid HTTP Code\"}\n"
+
+// 	status, body := makeTestRequest("GET", "http://127.0.0.1/set/700", nil, setStatusCode)
+
+// 	if status != httpWantedCode {
+// 		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
+// 	}
+
+// 	if httpWantedBody != body {
+// 		t.Errorf("Expected StatusCode pattern %s, got %s", httpWantedBody, body)
+// 	}
+// }
+
+// func TestSetStatusCode(t *testing.T) {
+
+// 	httpWantedCode := 200
+// 	httpWantedBody := "{\"STATUS:\" \"OK\"}\n"
+
+// 	status, body := makeTestRequest("GET", "http://127.0.0.1/set/500", nil, setStatusCode)
+
+// 	if status != httpWantedCode {
+// 		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
+// 	}
+
+// 	if httpWantedBody != body {
+// 		t.Errorf("Expected StatusCode pattern %s, got %s", httpWantedBody, body)
+// 	}
+
+// }
+
+// func TestPrintHeaders(t *testing.T) {
+
+// 	httpWantedCode := 200
+// 	httpPatternWantedBody := "{\"STATUS:\" \"200\", \"HOST:\" \".*\"}\n"
+
+// 	status, body := makeTestRequest("GET", "http://127.0.0.1/set/500", nil, printHeaders)
+
+// 	if status != httpWantedCode {
+// 		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, status)
+// 	}
+
+// 	regexRet, err := regexp.MatchString("{\"STATUS:\" \"200\", \"HOST:\" \".*\"}", body)
+// 	if !regexRet || err != nil {
+// 		t.Errorf("Expected StatusCode pattern %s, got %s", httpPatternWantedBody, body)
+// 	}
+// }
 
 // func TestPrintHeaders(t *testing.T) {
 
