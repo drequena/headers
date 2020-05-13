@@ -1,4 +1,4 @@
-package codes
+package main
 
 // Source https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
 var validCodes = map[int]bool{
