@@ -5,8 +5,7 @@ help:  ## Show available commands
 	@echo
 	@sed -n -E -e 's|^([A-Za-z0-9/_-]+):.+## (.+)|\1@\2|p' $(MAKEFILE_LIST) | column -s '@' -t
 
-build: ## Build binary and move to ./bin
-	test
+build: test ## Run tests, build binary and move to ./bin
 	go build
 	mkdir -p ./bin 2> /dev/null
 	mv headers bin/
