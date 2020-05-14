@@ -110,6 +110,7 @@ func TestCheckHTTPCODE(t *testing.T) {
 func makeTestRequest(method string, url string, body io.Reader, handler func(http.ResponseWriter, *http.Request)) (statusCode int, stringBody string) {
 	request := httptest.NewRequest(method, url, body)
 	response := httptest.NewRecorder()
+	request.Header.Add("Tests", "goTests")
 	handler(response, request)
 	retBody, _ := ioutil.ReadAll(response.Body)
 
