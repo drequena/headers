@@ -61,8 +61,9 @@ export PORT=8080
 This is a very simples app, you can build it just by typing _go build_
 Use _make_ to build and create docker image
 ```bash
-make build  #compiled the code
+make help   #list all possible targets
+make build  #test and compiled the code
+make test   #run unit tests
 make docker #create docker image
-or
-make all    # do both
+make all    #test, compile, create docker image
 ```
