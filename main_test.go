@@ -9,6 +9,69 @@ import (
 	"testing"
 )
 
+// Source https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+var validCodes = map[int]bool{
+	100: true,
+	101: true,
+	102: true,
+	103: true,
+	200: true,
+	202: true,
+	203: true,
+	204: true,
+	205: true,
+	206: true,
+	207: true,
+	208: true,
+	226: true,
+	300: true,
+	301: true,
+	302: true,
+	303: true,
+	304: true,
+	305: true,
+	307: true,
+	308: true,
+	400: true,
+	401: true,
+	402: true,
+	403: true,
+	404: true,
+	405: true,
+	406: true,
+	407: true,
+	408: true,
+	409: true,
+	410: true,
+	411: true,
+	412: true,
+	413: true,
+	414: true,
+	415: true,
+	416: true,
+	417: true,
+	421: true,
+	422: true,
+	423: true,
+	424: true,
+	425: true,
+	426: true,
+	428: true,
+	429: true,
+	431: true,
+	451: true,
+	500: true,
+	501: true,
+	502: true,
+	503: true,
+	504: true,
+	505: true,
+	506: true,
+	507: true,
+	508: true,
+	510: true,
+	511: true}
+
 func TestPrintHeaders(t *testing.T) {
 
 	httpWantedCode := 200
@@ -116,46 +179,3 @@ func makeTestRequest(method string, url string, body io.Reader, handler func(htt
 
 	return response.Result().StatusCode, string(retBody)
 }
-
-// func TestPrintHeaders(t *testing.T) {
-
-// 	httpWantedCode := 200
-// 	httpPatternWantedBody := "{\"STATUS:\" \"200\", \"HOST:\" \".*\"}\n"
-
-// 	r := httptest.NewRequest("GET", "http://127.0.0.1/", nil)
-// 	w := httptest.NewRecorder()
-// 	r.Header.Add("Test", "OK")
-// 	printHeaders(w, r)
-// 	resp := w.Result()
-// 	body, _ := ioutil.ReadAll(resp.Body)
-
-// 	if resp.StatusCode != httpWantedCode {
-// 		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, resp.StatusCode)
-// 	}
-
-// 	regexRet, err := regexp.MatchString("{\"STATUS:\" \"200\", \"HOST:\" \".*\"}", string(body))
-// 	if !regexRet || err != nil {
-// 		t.Errorf("Expected StatusCode pattern %s, got %s", httpPatternWantedBody, string(body))
-// 	}
-// }
-
-// func TestSetStatusCode(t *testing.T) {
-
-// 	httpWantedCode := 200
-// 	httpWantedBody := "{\"STATUS:\" \"OK\"}\n"
-
-// 	r := httptest.NewRequest("GET", "http://127.0.0.1/set/500", nil)
-// 	w := httptest.NewRecorder()
-// 	setStatusCode(w, r)
-// 	resp := w.Result()
-// 	body, _ := ioutil.ReadAll(resp.Body)
-
-// 	if resp.StatusCode != httpWantedCode {
-// 		t.Errorf("Expected StatusCode %d, got %d", httpWantedCode, resp.StatusCode)
-// 	}
-
-// 	if httpWantedBody != string(body) {
-// 		t.Errorf("Expected StatusCode pattern %s, got %s", httpWantedBody, string(body))
-// 	}
-
-// }
